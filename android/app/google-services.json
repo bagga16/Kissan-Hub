@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "44337977846",
+    "project_id": "kissan-hub-5a6f3",
+    "storage_bucket": "kissan-hub-5a6f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44337977846:android:ceed07df0a35018af6cfd7",
+        "android_client_info": {
+          "package_name": "com.example.kissan_hub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSv3hHRnARyk3LrFGcpWhF64IrtUupi5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
