@@ -115,8 +115,15 @@ class HomeScreen extends StatelessWidget {
                   ),
                   itemCount: _homeController.products.length,
                   itemBuilder: (context, index) {
-                    return DastyabMasnoatItem(
-                      product: _homeController.products[index],
+                    
+                     return GestureDetector(
+                      onTap: () {
+                        
+                        Get.to(() => CategoryScreen(productName: products[index]));
+                      },
+                      child: DastyabMasnoatItem(
+                        product: _homeController.products[index],
+                      ),
                     );
                   },
                 );

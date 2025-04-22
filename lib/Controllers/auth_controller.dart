@@ -1,8 +1,12 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kissan_hub/Models/user_model.dart';
+import 'package:kissan_hub/UI/App%20Screens/Auth%20Screens/ResetPasswordScreen.dart';
+import 'package:kissan_hub/UI/App%20Screens/User%20Screens/UserInfoScreen.dart';
 import 'package:kissan_hub/Utils%20and%20Services/app_routes.dart';
 
 class AuthController extends GetxController {
@@ -10,7 +14,6 @@ class AuthController extends GetxController {
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    FirebaseDatabase _realTimeDatabase = FirebaseDatabase.instance;
 
   Rxn<User> firebaseUser = Rxn<User>();
   Rxn<UserModel> firestoreUser = Rxn<UserModel>();
@@ -45,8 +48,9 @@ class AuthController extends GetxController {
       );
       await _firestore.collection('users').doc(cred.user!.uid).set(newUser.toMap());
       firestoreUser.value = newUser;
+         Get.to(() => UserInfoScreen());
     } catch (e) {
-      Get.snackbar('Registration Error', e.toString());
+      Get.snackbar('Registration Error', e.toString(),backgroundColor: Color.fromRGBO(35, 216, 44, 1), colorText: Colors.white);
     }
   }
   
@@ -64,13 +68,13 @@ class AuthController extends GetxController {
   }
 
  // Save updated user info to Firestore
-  Future<void> saveAdditionalUserInfo(String name, String phone, String city, String bio) async {
+  Future<void> saveAdditionalUserInfo(String name, String phone, String land, String bio) async {
     try {
       String uid = _auth.currentUser!.uid;
       await _firestore.collection('users').doc(uid).update({
         'name': name,
         'phone': phone,
-        'city': city,
+        'land': land,
         'bio': bio,
       });
 
@@ -81,7 +85,7 @@ class AuthController extends GetxController {
         email: firestoreUser.value?.email ?? '',
         profilePicUrl: firestoreUser.value?.profilePicUrl ?? '',
         phone: phone,
-        city: city,
+        land: land,
         bio: bio,
       );
 
@@ -92,26 +96,15 @@ class AuthController extends GetxController {
   }
 
  
- // Save user profile picture URL (base64) to Firestore and Realtime DB
-  Future<void> saveProfilePicUrl(String base64Image) async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      // Save to Firestore
-      await _firestore.collection('users').doc(user.uid).update({
-        'profilePicUrl': base64Image,
-      });
-
-      // Save to Realtime Database
-      DatabaseReference ref = _realTimeDatabase.ref('users/${user.uid}/profilePicUrl');
-      await ref.set(base64Image);
-    }
-  }
+ 
 
   Future<void> login(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
-      Get.snackbar('Login Error', e.toString());
+      Get.snackbar('Login Error', e.toString(), backgroundColor: Color.fromRGBO(35, 216, 44, 1), colorText: Colors.white);
+      
+      
     }
   }
 
@@ -119,26 +112,30 @@ class AuthController extends GetxController {
     await _auth.signOut();
   }
 
-    Future<void> resetPassword(String email) async {
+   // Function to send password reset email
+  Future<void> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
       Get.snackbar('Success', 'Password reset link sent to your email');
+      // Navigate to the reset password screen (or another screen)
+      Get.to(() => ResetPasswordConfirmScreen());
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Color.fromRGBO(35, 216, 44, 1), colorText: Colors.white);
     }
   }
 
+  // Function to confirm password reset
   Future<void> confirmPasswordReset(String newPassword) async {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
         await user.updatePassword(newPassword);
         Get.snackbar('Success', 'Password updated successfully');
-        // Optionally, redirect to login screen after password change
+        // Optionally, navigate to the login screen after password change
         Get.offAllNamed('/login');
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Color.fromRGBO(35, 216, 44, 1), colorText: Colors.white);
     }
   }
 }

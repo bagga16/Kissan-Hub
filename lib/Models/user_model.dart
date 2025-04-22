@@ -6,6 +6,7 @@ class UserModel {
   final String? phone;
   final String? city;
   final String? bio;
+  final String? land;
 
   UserModel({
     required this.uid,
@@ -14,7 +15,8 @@ class UserModel {
     required this.profilePicUrl,
      this.bio,
      this.city,
-     this.phone
+     this.phone,
+     this.land
   });
 
   Map<String, dynamic> toMap() {
@@ -25,7 +27,8 @@ class UserModel {
       'profilePicUrl': profilePicUrl,
       'bio': bio,
       'city': city,
-      'phone': phone
+      'phone': phone,
+      'land': land
 
     };
   }
@@ -38,7 +41,8 @@ class UserModel {
       profilePicUrl: map['profilePicUrl'] ?? '',
       phone: map['phone'] ?? '0000000',
       bio: map['bio'] ?? 'kissan',
-      city: map['city'] ?? 'RYK'
+      city: map['city'] ?? 'RYK',
+      land: map['land'] ?? '10'
     );
   }
 }

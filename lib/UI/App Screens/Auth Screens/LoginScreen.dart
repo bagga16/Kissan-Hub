@@ -72,7 +72,7 @@ class LoginScreen extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () {
-                   Get.to(ForgetPasswordScreen());
+                   Get.to(ResetPasswordScreen());
                   },
                   child: const Text('پاس ورڈ بھول گئے؟'),
                 ),

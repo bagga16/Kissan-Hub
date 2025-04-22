@@ -12,6 +12,7 @@ class UserProfileScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
+  final TextEditingController landController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final ProfileController controller = Get.put(ProfileController());
 
@@ -70,6 +71,7 @@ class UserProfileScreen extends StatelessWidget {
     phoneController.text = user.phone ?? '';
     cityController.text = user.city ?? '';
     bioController.text = user.bio ?? '';
+    landController.text = user.land ?? '';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -111,6 +113,8 @@ class UserProfileScreen extends StatelessWidget {
             SizedBox(height: 20),
             buildTextField(controller: phoneController, label: 'فون نمبر', icon: Icons.phone),
             SizedBox(height: 20),
+            buildTextField(controller: landController, label: 'رکبا (ایکڑ)', icon: Icons.landscape_rounded),
+            SizedBox(height: 20),
             buildTextField(controller: cityController, label: 'شہر', icon: Icons.location_city),
             SizedBox(height: 20),
             buildTextField(controller: bioController, label: 'تعرف', icon: Icons.info),
@@ -121,6 +125,7 @@ class UserProfileScreen extends StatelessWidget {
                 String phone = phoneController.text.trim();
                 String city = cityController.text.trim();
                 String bio = bioController.text.trim();
+                String land = landController.text.trim();
 
                 authController.saveAdditionalUserInfo(name, phone, city, bio);
 
