@@ -14,7 +14,7 @@ class CompanyItem extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(bottom: 18),
-     
+     padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Color.fromRGBO(240, 253, 244, 1),
         borderRadius: BorderRadius.circular(12),
@@ -35,7 +35,7 @@ class CompanyItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                  Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                 decoration: BoxDecoration(
                   color: Color.fromRGBO(35, 216, 44, 1),
                   borderRadius: BorderRadius.circular(8),
@@ -79,7 +79,7 @@ Text(
 
 
   Container(
-    height: 36,
+    height: 40,
     width: double.infinity,
     child: ElevatedButton(
                     onPressed: () {

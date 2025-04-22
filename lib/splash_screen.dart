@@ -6,7 +6,7 @@ import 'package:kissan_hub/Utils%20and%20Services/app_routes.dart';
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 5), () async {
+    Future.delayed(Duration(seconds: 3), () async {
       // Check if the user is already logged in
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {

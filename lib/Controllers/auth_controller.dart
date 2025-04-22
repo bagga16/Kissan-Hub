@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,7 @@ class AuthController extends GetxController {
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    FirebaseDatabase _realTimeDatabase = FirebaseDatabase.instance;
 
   Rxn<User> firebaseUser = Rxn<User>();
   Rxn<UserModel> firestoreUser = Rxn<UserModel>();
@@ -48,13 +50,19 @@ class AuthController extends GetxController {
     }
   }
   
-  // Fetch user data from Firestore
-  Future<void> _fetchUserData(User user) async {
-    DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
-    if (doc.exists) {
-      firestoreUser.value = UserModel.fromMap(doc.data() as Map<String, dynamic>);
+ // Stream to fetch user data in real-time
+  Stream<UserModel?> fetchUserData() {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      return _firestore
+          .collection('users')
+          .doc(user.uid)
+          .snapshots()
+          .map((doc) => doc.exists ? UserModel.fromMap(doc.data()!) : null);
     }
+    return Stream.value(null); // Return null if no user is logged in
   }
+
  // Save updated user info to Firestore
   Future<void> saveAdditionalUserInfo(String name, String phone, String city, String bio) async {
     try {
@@ -83,60 +91,21 @@ class AuthController extends GetxController {
     }
   }
 
-  // Update profile picture URL in Firestore
-  Future<void> updateProfilePicture(String newProfilePicUrl) async {
-    try {
-      String uid = _auth.currentUser!.uid;
-      await _firestore.collection('users').doc(uid).update({
-        'profilePicUrl': newProfilePicUrl,
+ 
+ // Save user profile picture URL (base64) to Firestore and Realtime DB
+  Future<void> saveProfilePicUrl(String base64Image) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      // Save to Firestore
+      await _firestore.collection('users').doc(user.uid).update({
+        'profilePicUrl': base64Image,
       });
 
-      // Update the local user model
-      firestoreUser.value = UserModel(
-        uid: uid,
-        name: firestoreUser.value?.name ?? '',
-        email: firestoreUser.value?.email ?? '',
-        profilePicUrl: newProfilePicUrl,
-        phone: firestoreUser.value?.phone ?? '',
-        city: firestoreUser.value?.city ?? '',
-        bio: firestoreUser.value?.bio ?? '',
-      );
-
-      Get.snackbar('Success', 'Profile picture updated');
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
+      // Save to Realtime Database
+      DatabaseReference ref = _realTimeDatabase.ref('users/${user.uid}/profilePicUrl');
+      await ref.set(base64Image);
     }
   }
-
-
-//   Future<void> saveAdditionalUserInfo(
-//     String name, String phone, String city, String bio) async {
-//   try {
-//     String uid = _auth.currentUser!.uid;
-//     await _firestore.collection('users').doc(uid).update({
-//       'name': name,
-//       'phone': phone,
-//       'city': city,
-//       'bio': bio,
-//     });
-
-//     firestoreUser.value = UserModel(
-//       uid: uid,
-//       name: name,
-//       email: firestoreUser.value?.email ?? '',
-//       profilePicUrl: firestoreUser.value?.profilePicUrl ?? '',
-//       phone: phone,
-//       city: city,
-//       bio: bio,
-//     );
-
-//     Get.offAllNamed(AppRoutes.home);
-//   } catch (e) {
-//     Get.snackbar('Error', e.toString());
-//   }
-// }
-
-
 
   Future<void> login(String email, String password) async {
     try {

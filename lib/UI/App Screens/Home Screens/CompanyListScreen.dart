@@ -132,17 +132,19 @@ class CompanyListScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(35, 216, 44, 1),
+         backgroundColor: Colors.white,
         title: Text('$productName کی کمپنیاں'),
         centerTitle: true,
       ),
       body: Padding(
+        
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             // Search Bar
+            SizedBox(height: 12),
             SearchTextField(hintText: '..... تلاش کریں'),
-            SizedBox(height: 18),
+            SizedBox(height: 25),
             // Company List
             Expanded(
               child: Obx(() {

@@ -15,7 +15,10 @@ void main() async {
 class KissanHubApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    
     return GetMaterialApp(
+      color: Color.fromRGBO(35, 216, 44, 1),
+    
       title: 'Kissan Hub',
       initialBinding: AuthBinding(),
       initialRoute: AppRoutes.splash,
