@@ -89,6 +89,7 @@
 //     );
 //   }
 // }
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -100,7 +101,7 @@ class TokeryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+       
         title: Text('میری ٹوکری'),
         centerTitle: true,
       ),
@@ -124,7 +125,7 @@ class TokeryScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final cartItem = cartItems[index];
 
-                      // Use null-aware operators to safely access fields
+                      // Safely access fields, providing default values if fields are missing
                       final price = cartItem['price'] ?? 0;  // Default to 0 if null
                       final quantity = cartItem['quantity'] ?? 1;  // Default to 1 if null
                       final weight = cartItem['weight'] ?? "Unknown Weight"; // Default if null
@@ -138,57 +139,73 @@ class TokeryScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(10),
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: image.isNotEmpty
-                                ? Image.network(
-                                    image, // Product image
-                                    width: 70,
-                                    height: 70,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(Icons.image, size: 70), // Placeholder if no image
-                          ),
-                          title: Text(name),
-                          subtitle: Text('Rs ${price} x ${weight}'),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
                             children: [
-                              // Item Count Control
-                              Row(
+                              // Leading widget for product image
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: image.isNotEmpty
+                                    ? Image.asset(
+                                        image, // Product image
+                                        width: 70,
+                                        height: 70,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Icon(Icons.image, size: 70), // Placeholder if no image
+                              ),
+                              SizedBox(width: 16),
+                              // Main content with product name and price
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+                                    SizedBox(height: 4),
+                                    Text('Rs ${price} x ${weight}'),
+                                  ],
+                                ),
+                              ),
+                              // Item Count Control (Trailing widget)
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  IconButton(
-                                    icon: Icon(Icons.remove, color: Colors.green),
-                                    onPressed: () async {
-                                      // Decrease item count
-                                      int newQuantity = quantity - 1;
-                                      if (newQuantity <= 0) {
-                                        // Remove item from cart if quantity is 0 or less
-                                        await _firestore.collection('cart').doc(cartItem.id).delete();
-                                      } else {
-                                        await _firestore.collection('cart').doc(cartItem.id).update({
-                                          'quantity': newQuantity,
-                                        });
-                                      }
-                                    },
+                                  // Item Count Control
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.remove, color: Colors.green),
+                                        onPressed: () async {
+                                          // Decrease item count
+                                          int newQuantity = quantity - 1;
+                                          if (newQuantity <= 0) {
+                                            // Remove item from cart if quantity is 0 or less
+                                            await _firestore.collection('cart').doc(cartItem.id).delete();
+                                          } else {
+                                            await _firestore.collection('cart').doc(cartItem.id).update({
+                                              'quantity': newQuantity,
+                                            });
+                                          }
+                                        },
+                                      ),
+                                      Text(quantity.toString(), style: TextStyle(fontSize: 18)),
+                                      IconButton(
+                                        icon: Icon(Icons.add, color: Colors.green),
+                                        onPressed: () async {
+                                          // Increase item count
+                                          int newQuantity = quantity + 1;
+                                          await _firestore.collection('cart').doc(cartItem.id).update({
+                                            'quantity': newQuantity,
+                                          });
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  Text(quantity.toString(), style: TextStyle(fontSize: 18)),
-                                  IconButton(
-                                    icon: Icon(Icons.add, color: Colors.green),
-                                    onPressed: () async {
-                                      // Increase item count
-                                      int newQuantity = quantity + 1;
-                                      await _firestore.collection('cart').doc(cartItem.id).update({
-                                        'quantity': newQuantity,
-                                      });
-                                    },
-                                  ),
+                                  // Total price for this item
+                                  Text('Rs ${(price * quantity).toStringAsFixed(2)}'),
                                 ],
                               ),
-                              // Total price for this item
-                              Text('Rs ${(price * quantity).toStringAsFixed(2)}'),
                             ],
                           ),
                         ),

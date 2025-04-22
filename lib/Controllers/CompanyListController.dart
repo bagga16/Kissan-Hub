@@ -134,6 +134,7 @@ class CompanyController extends GetxController {
       price: 55,
       weight: '14Kg',
       location: 'رحیم یار خان, پنجاب',
+      
     ),
     Company(
       name: 'Farm Fresh',
