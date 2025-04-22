@@ -10,8 +10,8 @@ class SplashScreen extends StatelessWidget {
       // Check if the user is already logged in
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // If logged in, navigate to Home
-        Get.offNamed(AppRoutes.home);
+       
+        Get.offNamed(AppRoutes.dashboard);
       } else {
         // If not logged in, navigate to Login
         Get.offNamed(AppRoutes.login);

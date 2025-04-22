@@ -1,10 +1,16 @@
+
+
+
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 // import 'package:kissan_hub/Controllers/CompanyListController.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+
 // class ProductDetailScreen extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
-//     final CompanyController controller = Get.find();
+//     final CompanyController controller = Get.find(); // Get the selected company details from controller
+//     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 //     return Scaffold(
 //       appBar: AppBar(
@@ -20,11 +26,11 @@
 //           return Column(
 //             crossAxisAlignment: CrossAxisAlignment.start,
 //             children: [
-//               // Product Image
+//               // Product Image (Company logo or product image)
 //               ClipRRect(
 //                 borderRadius: BorderRadius.circular(12),
 //                 child: Image.asset(
-//                   company.logoUrl,  // You can replace with actual product image URL
+//                   company.logoUrl,  // Replace with actual product or company image URL
 //                   height: 200,
 //                   width: double.infinity,
 //                   fit: BoxFit.cover,
@@ -68,10 +74,23 @@
 //                 style: TextStyle(fontSize: 14),
 //               ),
 //               SizedBox(height: 20),
-//               // Buy Now Button
+//               // Add to Cart Button
 //               ElevatedButton(
-//                 onPressed: () {
-//                   // Add your buying logic here
+//                 onPressed: () async {
+//                   // Add the product to Firestore when the user taps "Add to Cart"
+//                   await _firestore.collection('cart').add({
+//                     'name': company.productName,
+//                     'price': company.price,
+//                     'image': company.logoUrl,
+//                     'weight': company.weight,
+//                     'location': company.location,
+//                     'description': company.description,
+//                     'timestamp': FieldValue.serverTimestamp(),
+//                   });
+
+//                   // Show confirmation message
+//                   Get.snackbar('ٹوکری میں شامل ', 'پروڈکٹ کو آپ کی ٹوکری میں شامل کر دیا گیا ہے۔',
+//                       snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
 //                 },
 //                 style: ElevatedButton.styleFrom(
 //                   backgroundColor: Colors.green,
@@ -79,7 +98,7 @@
 //                     borderRadius: BorderRadius.circular(12),
 //                   ),
 //                 ),
-//                 child: Text('اب خریدیں'),
+//                 child: Text('ٹوکری میں شامل کریں'),
 //               ),
 //             ],
 //           );
@@ -93,11 +112,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kissan_hub/Controllers/CompanyListController.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final CompanyController controller = Get.find();  // Get the selected company details from controller
+    final CompanyController controller = Get.put(CompanyController()); // Get the selected company details from controller
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     return Scaffold(
       appBar: AppBar(
@@ -161,10 +182,24 @@ class ProductDetailScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 14),
               ),
               SizedBox(height: 20),
-              // Buy Now Button
+              // Add to Cart Button
               ElevatedButton(
-                onPressed: () {
-                  // Logic to handle buying functionality
+                onPressed: () async {
+                  // Add the product to Firestore with quantity set to 1 by default
+                  await _firestore.collection('cart').add({
+                    'name': company.productName,
+                    'price': company.price,
+                    'image': company.logoUrl,
+                    'weight': company.weight,
+                    'location': company.location,
+                    'description': company.description,
+                    'timestamp': FieldValue.serverTimestamp(),
+                    'quantity': 1,  // Default quantity is set to 1
+                  });
+
+                  // Show confirmation message
+                  Get.snackbar('ٹوکری میں شامل ', 'پروڈکٹ کو آپ کی ٹوکری میں شامل کر دیا گیا ہے۔',
+                      snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -172,7 +207,7 @@ class ProductDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text('اب خریدیں'),
+                child: Text('ٹوکری میں شامل کریں'),
               ),
             ],
           );

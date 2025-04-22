@@ -28,7 +28,7 @@ class AuthController extends GetxController {
       if (doc.exists) {
         firestoreUser.value = UserModel.fromMap(doc.data() as Map<String, dynamic>);
       }
-      Get.offAllNamed(AppRoutes.home);
+      Get.offAllNamed(AppRoutes.dashboard);
     }
   }
 
@@ -47,32 +47,95 @@ class AuthController extends GetxController {
       Get.snackbar('Registration Error', e.toString());
     }
   }
-  Future<void> saveAdditionalUserInfo(
-    String name, String phone, String city, String bio) async {
-  try {
-    String uid = _auth.currentUser!.uid;
-    await _firestore.collection('users').doc(uid).update({
-      'name': name,
-      'phone': phone,
-      'city': city,
-      'bio': bio,
-    });
-
-    firestoreUser.value = UserModel(
-      uid: uid,
-      name: name,
-      email: firestoreUser.value?.email ?? '',
-      profilePicUrl: firestoreUser.value?.profilePicUrl ?? '',
-      phone: phone,
-      city: city,
-      bio: bio,
-    );
-
-    Get.offAllNamed(AppRoutes.home);
-  } catch (e) {
-    Get.snackbar('Error', e.toString());
+  
+  // Fetch user data from Firestore
+  Future<void> _fetchUserData(User user) async {
+    DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
+    if (doc.exists) {
+      firestoreUser.value = UserModel.fromMap(doc.data() as Map<String, dynamic>);
+    }
   }
-}
+ // Save updated user info to Firestore
+  Future<void> saveAdditionalUserInfo(String name, String phone, String city, String bio) async {
+    try {
+      String uid = _auth.currentUser!.uid;
+      await _firestore.collection('users').doc(uid).update({
+        'name': name,
+        'phone': phone,
+        'city': city,
+        'bio': bio,
+      });
+
+      // Update the local user model
+      firestoreUser.value = UserModel(
+        uid: uid,
+        name: name,
+        email: firestoreUser.value?.email ?? '',
+        profilePicUrl: firestoreUser.value?.profilePicUrl ?? '',
+        phone: phone,
+        city: city,
+        bio: bio,
+      );
+
+      Get.snackbar('Success', 'Profile updated successfully');
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
+
+  // Update profile picture URL in Firestore
+  Future<void> updateProfilePicture(String newProfilePicUrl) async {
+    try {
+      String uid = _auth.currentUser!.uid;
+      await _firestore.collection('users').doc(uid).update({
+        'profilePicUrl': newProfilePicUrl,
+      });
+
+      // Update the local user model
+      firestoreUser.value = UserModel(
+        uid: uid,
+        name: firestoreUser.value?.name ?? '',
+        email: firestoreUser.value?.email ?? '',
+        profilePicUrl: newProfilePicUrl,
+        phone: firestoreUser.value?.phone ?? '',
+        city: firestoreUser.value?.city ?? '',
+        bio: firestoreUser.value?.bio ?? '',
+      );
+
+      Get.snackbar('Success', 'Profile picture updated');
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
+
+
+//   Future<void> saveAdditionalUserInfo(
+//     String name, String phone, String city, String bio) async {
+//   try {
+//     String uid = _auth.currentUser!.uid;
+//     await _firestore.collection('users').doc(uid).update({
+//       'name': name,
+//       'phone': phone,
+//       'city': city,
+//       'bio': bio,
+//     });
+
+//     firestoreUser.value = UserModel(
+//       uid: uid,
+//       name: name,
+//       email: firestoreUser.value?.email ?? '',
+//       profilePicUrl: firestoreUser.value?.profilePicUrl ?? '',
+//       phone: phone,
+//       city: city,
+//       bio: bio,
+//     );
+
+//     Get.offAllNamed(AppRoutes.home);
+//   } catch (e) {
+//     Get.snackbar('Error', e.toString());
+//   }
+// }
+
 
 
   Future<void> login(String email, String password) async {
@@ -85,5 +148,28 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     await _auth.signOut();
+  }
+
+    Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      Get.snackbar('Success', 'Password reset link sent to your email');
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
+
+  Future<void> confirmPasswordReset(String newPassword) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await user.updatePassword(newPassword);
+        Get.snackbar('Success', 'Password updated successfully');
+        // Optionally, redirect to login screen after password change
+        Get.offAllNamed('/login');
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 }
