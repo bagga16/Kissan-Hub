@@ -147,13 +147,14 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100),
+        preferredSize: Size.fromHeight(88),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Color.fromRGBO(35, 216, 44, 1),
           flexibleSpace: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Obx(() {
@@ -187,7 +188,7 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 10),
             // Header for "Bazari Qeemat"
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.centerRight,
               child: Text('بازاری قیمت', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
             SizedBox(height: 10),
@@ -210,9 +211,9 @@ class HomeScreen extends StatelessWidget {
                 );
               }),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 14),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.centerRight,
               child: Text('دستیاب مصنوعات', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
             SizedBox(height: 10),
